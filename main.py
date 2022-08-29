@@ -4,6 +4,7 @@ from datetime import date
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
+import time
 import requests
 import sqlite3
 
@@ -55,6 +56,9 @@ def pars():
                 conn.commit()
 
     conn.close
+    
+    time.sleep(30)
+    pars()
     
 def get_urls():
     with open('links.txt', 'r') as file:
