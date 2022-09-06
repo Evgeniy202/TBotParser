@@ -1,7 +1,6 @@
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
-from cgitb import text
 from bs4 import BeautifulSoup as BS
 from datetime import date
 import time
@@ -60,6 +59,7 @@ async def start_pars(messsage: types.Message):
             
                 j = 1
                 in_list = []
+                text = ''
                 while j < int(html.find('div', class_='pages_nav').find_all('a')[-1].text) + 1:
                     print('j= ', j)
                     req = requests.get(link, f'#ss=name&sp={j}')
@@ -70,6 +70,7 @@ async def start_pars(messsage: types.Message):
                             date_now = date.today()
                             tittle = tittle.replace('(', '').replace(')', '').replace(',', '').replace("'", '').replace('"', '')
                             cursor.execute(f"INSERT INTO datas ('date', 'tittle', 'name') VALUES (?, ?, ?)", (date_now, tittle, name))
+                            conn.commit()
                             in_list.append(tittle)
                             
                             text = f"{name} to add new game: {tittle} \nhttps://plati.market{el.find('td', 'product-title').find('div').find('a')['href']}"
@@ -83,9 +84,8 @@ async def start_pars(messsage: types.Message):
                                     await bot.send_message(int(id), text)
                                 except:
                                     cursor.execute(f"DELETE FROM users WHERE user_id = {int(id)}")
+                                    conn.commit()
                     j+=1
-                    
-                    conn.commit()
                     
                 if len(in_list) > 0:
                     for el in in_list:
